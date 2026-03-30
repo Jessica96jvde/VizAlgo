@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">VizAlgo</string>
+    <string name="app_tagline">The Complete Algorithm Experience.</string>
+    <!-- Your actual Web Client ID from Firebase Console -->
+    <string name="default_web_client_id">915454614623-vuc7sitgajattrujoaj55sp06iiirv2v.apps.googleusercontent.com</string>
 </resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "915454614623",
+    "project_id": "vizalgodb",
+    "storage_bucket": "vizalgodb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915454614623:android:b5a3621a23dc1cdbe88fea",
+        "android_client_info": {
+          "package_name": "com.example.vizalgo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDosodwS81lJW19JGmJysEfcRddE0tf6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
