@@ -4,11 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 
-class StackVisualize : ComponentActivity() {
+class LinkedListVisualize : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val isDoubly = intent.getBooleanExtra("IS_DOUBLY", false)
         setContent {
-            StackScreen()
+            LinkedListScreen(isDoubly = isDoubly)
         }
     }
 }

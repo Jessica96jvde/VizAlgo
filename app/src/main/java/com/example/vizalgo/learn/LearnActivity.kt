@@ -166,6 +166,24 @@ fun getDetailedLearnContent(dsName: String, tab: Int): String {
             2 -> "Queue Performance:\n\n- Access: O(n)\n- Search: O(n)\n- Insertion (Enqueue): O(1)\n- Deletion (Dequeue): O(1)"
             else -> "Real-world Example:\n- Printing queue\n- CPU Task Scheduling\n- Call Center systems"
         }
+        "Singly Linked List" -> when (tab) {
+            0 -> "A Singly Linked List is a collection of nodes where each node contains data and a pointer to the 'Next' node.\n\nIt only goes in one direction, like a one-way street."
+            1 -> "Operations:\n- Add Head: O(1)\n- Add Tail: O(1) (with optimization)\n- Search: O(N)"
+            2 -> "Singly lists use less memory than Doubly lists because they only store ONE pointer per node."
+            else -> "Use case: Simple undo buffers or symbol tables in compilers."
+        }
+        "Doubly Linked List" -> when (tab) {
+            0 -> "A Doubly Linked List is more powerful! Each node knows its 'Next' AND its 'Previous' neighbor.\n\nYou can walk forwards or backwards through the list."
+            1 -> "Operations:\n- Add/Remove at either end: O(1)\n- Delete a known node: O(1)"
+            2 -> "The trade-off is Memory. Each node must store TWO pointers instead of one."
+            else -> "Use case: Browser 'Forward' and 'Back' buttons, or Music Player playlists."
+        }
+        "AVL Tree" -> when (tab) {
+            0 -> "An AVL Tree is a self-balancing Binary Search Tree (BST). It ensures that the height difference between left and right subtrees (Balance Factor) is at most 1.\n\nNamed after its inventors, Adelson-Velsky and Landis."
+            1 -> "When a node is inserted or deleted, the tree checks the Balance Factor. If it becomes >1 or <-1, 'Rotations' are performed to rebalance it."
+            2 -> "AVL Performance:\n- Search: O(log N)\n- Insertion: O(log N)\n- Deletion: O(log N)\n\nIt is more balanced than a regular BST, making it faster for searches."
+            else -> "Real-world Example:\n- Databases (indexing)\n- Memory management systems\n- Any scenario requiring fast lookups and frequent updates."
+        }
         else -> "Content coming soon..."
     }
 }

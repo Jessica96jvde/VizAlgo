@@ -9,7 +9,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
@@ -29,6 +31,9 @@ import com.example.vizalgo.R
 import com.example.vizalgo.utils.glow
 import com.example.vizalgo.learn.LearnActivity
 import com.example.vizalgo.game.GameChoice
+import com.example.vizalgo.visualize.StackVisualize
+import com.example.vizalgo.visualize.QueueVisualize
+import com.example.vizalgo.visualize.LinkedListVisualize
 
 class DSListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,12 +44,24 @@ class DSListActivity : ComponentActivity() {
             DSListScreen(mode) { dsName ->
                 val destinationActivity = when (mode) {
                     "Game" -> GameChoice::class.java
+                    "Visualize" -> {
+                        when (dsName) {
+                            "Stack" -> StackVisualize::class.java
+                            "Queue" -> QueueVisualize::class.java
+                            "Singly Linked List", "Doubly Linked List" -> LinkedListVisualize::class.java
+                            "AVL Tree" -> com.example.vizalgo.visualize.AVLTreeVisualize::class.java
+                            else -> LearnActivity::class.java
+                        }
+                    }
                     else -> LearnActivity::class.java
                 }
                 
                 val intent = Intent(this, destinationActivity).apply {
                     putExtra("MODE", mode)
                     putExtra("DS_NAME", dsName)
+                    if (dsName == "Doubly Linked List") {
+                        putExtra("IS_DOUBLY", true)
+                    }
                 }
                 startActivity(intent)
             }
@@ -68,7 +85,8 @@ fun DSListScreen(mode: String, onDSSelected: (String) -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -81,11 +99,18 @@ fun DSListScreen(mode: String, onDSSelected: (String) -> Unit) {
                 color = green4
             )
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             DSItemCard("Stack", R.drawable.splashbackground, cantoraFont) { onDSSelected("Stack") }
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             DSItemCard("Queue", R.drawable.splashbackground, cantoraFont) { onDSSelected("Queue") }
+            Spacer(modifier = Modifier.height(16.dp))
+            DSItemCard("Singly Linked List", R.drawable.splashbackground, cantoraFont) { onDSSelected("Singly Linked List") }
+            Spacer(modifier = Modifier.height(16.dp))
+            DSItemCard("Doubly Linked List", R.drawable.splashbackground, cantoraFont) { onDSSelected("Doubly Linked List") }
+            Spacer(modifier = Modifier.height(16.dp))
+            DSItemCard("AVL Tree", R.drawable.splashbackground, cantoraFont) { onDSSelected("AVL Tree") }
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }

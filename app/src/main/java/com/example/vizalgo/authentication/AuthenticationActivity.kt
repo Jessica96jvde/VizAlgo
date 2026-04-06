@@ -96,7 +96,17 @@ fun AuthenticationApp(otpHelper: OtpHelper, onAuthSuccess: () -> Unit) {
                 }
             }
         } catch (e: ApiException) {
-            Toast.makeText(context, "Google Login Cancelled", Toast.LENGTH_SHORT).show()
+            // PROVIDE BETTER DEBUG INFO: 
+            // 12500: Internal Error
+            // 10: Developer Error (Usually SHA-1 mismatch)
+            // 7: Network Error
+            val message = when(e.statusCode) {
+                10 -> "Developer Error (check SHA-1 in Firebase)"
+                7 -> "Network Error"
+                12500 -> "Internal Error"
+                else -> "Error code: ${e.statusCode}"
+            }
+            Toast.makeText(context, "Google Login Failed: $message", Toast.LENGTH_LONG).show()
         }
     }
 
