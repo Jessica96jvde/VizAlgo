@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Stack Data Structure Learning Content -->
+
+    <!-- Tab 0: Overview -->
+    <string name="stack_overview_title">What is a Stack?</string>
+    <string name="stack_overview_content">📚 WHAT IS A STACK?\n\nA Stack is a linear data structure that follows the principle:\n\n👉 LIFO (Last In, First Out)\nThe last element inserted is the first one to be removed.\n\n📌 Real-Life Examples:\n• Stack of plates 🍽️ - You add/remove from the top\n• Undo feature in apps - Last action is undone first\n• Browser history - Back button shows last visited page\n• Function calls - Recursion uses call stack\n\nA Stack is a conceptual structure consisting of homogeneous elements based on the principle of last in first out (LIFO). It\'s a common data structure used in many areas of computer science.</string>
+
+    <!-- Tab 1: Operations -->
+    <string name="stack_operations_title">Basic Operations</string>
+    <string name="stack_operations_content">🔹 BASIC OPERATIONS IN STACK\n\n1. PUSH - Insert an element into the stack\n• Adds element to the TOP\n• Time Complexity: O(1)\n\n2. POP - Remove the top element\n• Removes the most recently added element\n• Time Complexity: O(1)\n\n3. PEEK/TOP - View the top element\n• Returns top element without removing it\n• Time Complexity: O(1)\n\n4. isEmpty - Check if stack is empty\n• Returns true if no elements\n\n5. isFull - Check if stack is full\n• For array implementation only\n• Returns true if capacity is reached</string>
+
+    <!-- Tab 2: Rules -->
+    <string name="stack_rules_title">Stack Rules &amp; Concepts</string>
+    <string name="stack_rules_content">🔹 STACK RULES\n\n1. Only one end (TOP) is used for both insertion and deletion\n• You cannot add/remove from the middle or bottom\n\n2. Push &amp; Pop operations happen at TOP only\n• All modifications are at the TOP\n\n3. Cannot access middle elements directly\n• Must pop elements from top to access others\n\n4. Overflow\n• Occurs when trying to push to a full stack\n• Memory limit exceeded (array implementation)\n\n5. Underflow\n• Occurs when trying to pop from an empty stack\n• No elements to remove\n\n🔹 STACK REPRESENTATIONS:\n✅ Using Array - Fixed size, faster access, may overflow\n✅ Using Linked List - Dynamic size, no overflow until memory full</string>
+
+    <!-- Tab 3: Complexity -->
+    <string name="stack_complexity_title">Time Complexity</string>
+    <string name="stack_complexity_content">⏱️ TIME COMPLEXITY ANALYSIS\n\nStack Operations Performance:\n\nOperation | Time Complexity | Space\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPush      | O(1)           | O(n)\nPop       | O(1)           | O(n)\nPeek/Top  | O(1)           | O(1)\nSearch    | O(n)           | -\nAccess    | O(n)           | -\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nWhy is Push O(1)?\n→ Inserting at a fixed position (TOP)\n→ No need to shift elements\n\nWhy is Pop O(1)?\n→ Removing from a fixed position (TOP)\n→ No reorganization needed\n\nWhy is Search O(n)?\n→ Must pop all elements to find a value\n→ Cannot access middle directly</string>
+
+    <!-- Tab 4: Applications -->
+    <string name="stack_applications_title">Real-World Applications</string>
+    <string name="stack_applications_content">💡 APPLICATIONS OF STACK\n\n1. Expression Evaluation &amp; Conversion\n• Evaluating infix expressions\n• Converting infix to postfix notation\n• Calculating mathematical expressions\n\n2. Parenthesis/Bracket Checking\n• Validating balanced parentheses: ( { [ ] } )\n• Compiler syntax checking\n\n3. Function Calls (Call Stack)\n• Managing function calls in recursion\n• Call stack trace in debuggers\n• Program execution flow\n\n4. Undo/Redo Operations\n• Undo in text editors (Word, Google Docs)\n• Undo in design software (Photoshop, Figma)\n• Browser back button\n\n5. Backtracking Algorithms\n• Maze solving (DFS)\n• Puzzle solving\n• Game AI decision making\n\n6. Memory Management\n• Memory allocation on stack vs heap\n• Variable scope management\n\n7. Browser History\n• Storing visited pages\n• Back navigation</string>
+
+    <!-- Tab 5: Examples -->
+    <string name="stack_examples_title">Step-by-Step Examples</string>
+    <string name="stack_examples_content">🔹 STEP-BY-STEP EXAMPLES\n\n📌 PUSH Operation:\nInitial: [10, 20, 30]\nTOP = 2\n\nAfter Push(40):\nTOP → [40]\n      [30]\n      [20]\n      [10]\n\n📌 POP Operation:\nInitial:\nTOP → [40]\n      [30]\n      [20]\n      [10]\n\nAfter Pop():\nRemoved: 40\nTOP → [30]\n      [20]\n      [10]\n\n📌 PEEK Operation:\nStack: [10, 20, 30]\nPeek() → Returns 30 (without removing)\n\n💡 BONUS: Implementation Tips\n→ Use dynamic arrays/lists for flexibility\n→ Handle overflow/underflow gracefully\n→ Add animations for better visualization\n→ Create step-by-step simulation mode</string>
+
+    <!-- Push Operation Details -->
+    <string name="stack_push_algorithm">🔹 PUSH OPERATION (Insertion)\n\nAlgorithm:\n1. Check if stack is full\n2. If full → Overflow error\n3. Else → increment TOP pointer\n4. Insert element at TOP position\n\nTime Complexity: O(1)\n\nExample:\nInitial: [10, 20, 30], TOP = 2\nPush(40):\n    • Increment TOP to 3\n    • Add 40 at position 3\nResult: [10, 20, 30, 40], TOP = 3\n\nKey Points:\n• Always adds to the top\n• No shifting of elements needed\n• Constant time operation</string>
+
+    <!-- Pop Operation Details -->
+    <string name="stack_pop_algorithm">🔹 POP OPERATION (Deletion)\n\nAlgorithm:\n1. Check if stack is empty\n2. If empty → Underflow error\n3. Else → remove element from TOP\n4. Decrement TOP pointer\n\nTime Complexity: O(1)\n\nExample:\nInitial: [10, 20, 30, 40], TOP = 3\nPop():\n    • Remove element at TOP (40)\n    • Decrement TOP to 2\nResult: [10, 20, 30], TOP = 2\n\nKey Points:\n• Always removes from the top\n• Returns removed element\n• No reorganization needed</string>
+
+    <!-- Peek Operation Details -->
+    <string name="stack_peek_algorithm">🔹 PEEK OPERATION (Access)\n\nAlgorithm:\n1. Check if stack is empty\n2. If empty → return null/error\n3. Else → return element at TOP\n4. Do NOT decrement TOP\n\nTime Complexity: O(1)\n\nExample:\nStack: [10, 20, 30], TOP = 2\nPeek(): Returns 30\n\nStack remains: [10, 20, 30]\nTOP unchanged at 2\n\nKey Points:\n• Only views the element\n• Does not modify the stack\n• No elements removed</string>
+
+    <!-- Error Messages -->
+    <string name="stack_overflow_error">Stack Overflow! Cannot push - stack is full</string>
+    <string name="stack_underflow_error">Stack Underflow! Cannot pop - stack is empty</string>
+    <string name="stack_empty_message">Stack is empty</string>
+    <string name="stack_full_message">Stack is full</string>
+
+    <!-- Key Concepts -->
+    <string name="stack_lifo_concept">LIFO: Last In, First Out - The last element added is the first to be removed</string>
+    <string name="stack_overflow_concept">Overflow: Attempting to push an element to a full stack</string>
+    <string name="stack_underflow_concept">Underflow: Attempting to pop an element from an empty stack</string>
+    <string name="stack_top_concept">TOP: Pointer indicating the position of the most recently added element</string>
+
+</resources>
+
