@@ -21,9 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vizalgo.R
@@ -36,6 +39,7 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
     val cantoraFont = FontFamily(Font(R.font.cantora_one))
     var list by remember { mutableStateOf(listOf<Int>()) }
     var input by remember { mutableStateOf("") }
+    var posInput by remember { mutableStateOf("") }
     val green4 = colorResource(id = R.color.green4)
     
     var recentlyAddedIndex by remember { mutableStateOf(-1) }
@@ -76,7 +80,7 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
                 contentAlignment = Alignment.Center
             ) {
                 if (list.isEmpty()) {
-                    Text("List is empty", color = Color.White.copy(alpha = 0.5f), fontSize = 20.sp)
+                    Text("List is empty", color = Color.White.copy(alpha = 0.5f), fontSize = 20.sp, fontFamily = cantoraFont)
                 } else {
                     Row(
                         modifier = Modifier
@@ -124,7 +128,8 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
                 color = Color.White.copy(alpha = 0.7f),
                 fontSize = 14.sp,
                 modifier = Modifier.padding(bottom = 16.dp, start = 20.dp, end = 20.dp),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                fontFamily = cantoraFont
             )
 
             val scope = rememberCoroutineScope()
@@ -138,6 +143,7 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
                 colors = CardDefaults.cardColors(containerColor = Color.Transparent)
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
+                    // INPUT FIELDS
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -148,101 +154,108 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
                             placeholder = { Text("Value", color = Color.White.copy(alpha = 0.4f)) },
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(horizontal = 8.dp),
+                                .padding(horizontal = 4.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.White.copy(alpha = 0.05f),
                                 unfocusedContainerColor = Color.Transparent,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
                                 cursorColor = Color.White,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
+                                focusedIndicatorColor = green4
+                            ),
+                            singleLine = true
+                        )
+
+                        TextField(
+                            value = posInput,
+                            onValueChange = { if (it.all { char -> char.isDigit() } && it.length <= 2) posInput = it },
+                            placeholder = { Text("Pos", color = Color.White.copy(alpha = 0.4f)) },
+                            modifier = Modifier
+                                .width(70.dp)
+                                .padding(horizontal = 4.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.White.copy(alpha = 0.05f),
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                cursorColor = Color.White,
+                                focusedIndicatorColor = green4
                             ),
                             singleLine = true
                         )
 
                         Button(
-                            onClick = {
-                                if (input.isNotEmpty()) {
-                                    val newVal = input.toInt()
-                                    list = list + newVal
-                                    input = ""
-                                    recentlyAddedIndex = list.lastIndex
-                                    scope.launch {
-                                        delay(500)
-                                        recentlyAddedIndex = -1
-                                    }
-                                }
-                            },
-                            modifier = Modifier.height(50.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = green4)
+                            onClick = { list = emptyList(); input = ""; posInput = "" },
+                            modifier = Modifier.padding(start = 4.dp).height(54.dp).width(75.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C))
                         ) {
-                            Text("Add Tail", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text("Clear", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
+                    }
 
-                        Button(
-                            onClick = {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // ACTION BUTTONS GRID (3x2)
+                    Column {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            ActionButton("Add Head", green4, Modifier.weight(1f)) {
                                 if (input.isNotEmpty()) {
                                     val newVal = input.toInt()
                                     list = listOf(newVal) + list
                                     input = ""
                                     recentlyAddedIndex = 0
-                                    scope.launch {
-                                        delay(500)
-                                        recentlyAddedIndex = -1
-                                    }
+                                    scope.launch { delay(500); recentlyAddedIndex = -1 }
                                 }
-                            },
-                            modifier = Modifier.height(50.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = green4)
-                        ) {
-                            Text("Add Head", color = Color.White, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        Button(
-                            onClick = {
-                                if (list.isNotEmpty()) {
-                                    recentlyDeletedIndex = list.lastIndex
-                                    scope.launch {
-                                        delay(500)
-                                        list = list.dropLast(1)
-                                        recentlyDeletedIndex = -1
-                                    }
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            ActionButton("Add Tail", green4, Modifier.weight(1f)) {
+                                if (input.isNotEmpty()) {
+                                    val newVal = input.toInt()
+                                    list = list + newVal
+                                    input = ""
+                                    recentlyAddedIndex = list.lastIndex
+                                    scope.launch { delay(500); recentlyAddedIndex = -1 }
                                 }
-                            },
-                            modifier = Modifier.height(40.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
-                        ) {
-                            Text("Pop Back", color = Color.White, fontSize = 12.sp)
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            ActionButton("Insert Pos", green4, Modifier.weight(1f)) {
+                                if (input.isNotEmpty() && posInput.isNotEmpty()) {
+                                    val newVal = input.toInt()
+                                    val pos = posInput.toInt().coerceIn(0, list.size)
+                                    val mutableList = list.toMutableList()
+                                    mutableList.add(pos, newVal)
+                                    list = mutableList
+                                    input = ""; posInput = ""; recentlyAddedIndex = pos
+                                    scope.launch { delay(500); recentlyAddedIndex = -1 }
+                                }
+                            }
                         }
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
-                        
-                        Button(
-                            onClick = {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            ActionButton("Pop Front", Color(0xFFD32F2F), Modifier.weight(1f)) {
                                 if (list.isNotEmpty()) {
                                     recentlyDeletedIndex = 0
-                                    scope.launch {
-                                        delay(500)
-                                        list = list.drop(1)
-                                        recentlyDeletedIndex = -1
+                                    scope.launch { delay(500); list = list.drop(1); recentlyDeletedIndex = -1 }
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            ActionButton("Pop Back", Color(0xFFD32F2F), Modifier.weight(1f)) {
+                                if (list.isNotEmpty()) {
+                                    recentlyDeletedIndex = list.lastIndex
+                                    scope.launch { delay(500); list = list.dropLast(1); recentlyDeletedIndex = -1 }
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            ActionButton("Delete Pos", Color(0xFFD32F2F), Modifier.weight(1f)) {
+                                if (posInput.isNotEmpty()) {
+                                    val pos = posInput.toInt()
+                                    if (pos in list.indices) {
+                                        recentlyDeletedIndex = pos
+                                        scope.launch { delay(500); val m = list.toMutableList(); m.removeAt(pos); list = m; posInput = ""; recentlyDeletedIndex = -1 }
                                     }
                                 }
-                            },
-                            modifier = Modifier.height(40.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
-                        ) {
-                            Text("Pop Front", color = Color.White, fontSize = 12.sp)
+                            }
                         }
                     }
                 }
@@ -284,21 +297,8 @@ fun NodeItem(
     glowColor: Color? = null,
     isReversed: Boolean = false
 ) {
+    val cantoraFont = FontFamily(Font(R.font.cantora_one))
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        // Head/Tail Labels
-        Text(
-            text = when {
-                isFirst && isLast -> "Head/Tail"
-                isFirst -> "Head"
-                isLast -> "Tail"
-                else -> ""
-            },
-            color = green4,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 2.dp)
-        )
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             val showNullOnLeft = (isLast && isReversed) || (isFirst && isDoubly && !isReversed)
             val showNullOnRight = (isLast && !isReversed) || (isFirst && isDoubly && isReversed)
@@ -319,11 +319,15 @@ fun NodeItem(
             Box(
                 modifier = Modifier
                     .size(width = 75.dp, height = 45.dp)
-                    .then(
-                        if (glowColor != null) {
-                            Modifier.border(2.dp, glowColor, RoundedCornerShape(12.dp))
-                                .background(glowColor.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
-                        } else Modifier
+                    .background(
+                        if (glowColor != null) glowColor.copy(alpha = 0.25f)
+                        else Color.White.copy(alpha = 0.15f),
+                        RoundedCornerShape(12.dp)
+                    )
+                    .border(
+                        2.dp,
+                        glowColor ?: green4,
+                        RoundedCornerShape(12.dp)
                     )
                     .glassmorphic(RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
@@ -348,5 +352,50 @@ fun NodeItem(
                 }
             }
         }
+
+        // Head/Tail Labels
+        if (isFirst || isLast) {
+            val labelText = buildAnnotatedString {
+                if (isFirst && isLast) {
+                    withStyle(style = SpanStyle(color = Color.Cyan)) { append("Head") }
+                    withStyle(style = SpanStyle(color = Color.White)) { append("/") }
+                    withStyle(style = SpanStyle(color = Color.Yellow)) { append("Tail") }
+                } else if (isFirst) {
+                    withStyle(style = SpanStyle(color = Color.Cyan)) { append("Head") }
+                } else {
+                    withStyle(style = SpanStyle(color = Color.Yellow)) { append("Tail") }
+                }
+            }
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowUp,
+                    contentDescription = null,
+                    tint = if (isFirst) Color.Cyan else Color.Yellow,
+                    modifier = Modifier.size(14.dp)
+                )
+                Text(
+                    text = labelText,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = cantoraFont
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.height(28.dp))
+        }
+    }
+}
+
+@Composable
+private fun ActionButton(text: String, color: Color, modifier: Modifier, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.height(46.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = color),
+        contentPadding = PaddingValues(horizontal = 4.dp)
+    ) {
+        Text(text = text, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 10.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center, maxLines = 1)
     }
 }

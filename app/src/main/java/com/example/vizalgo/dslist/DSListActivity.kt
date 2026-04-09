@@ -34,6 +34,11 @@ import com.example.vizalgo.game.GameChoice
 import com.example.vizalgo.visualize.StackVisualize
 import com.example.vizalgo.visualize.QueueVisualize
 import com.example.vizalgo.visualize.LinkedListVisualize
+import com.example.vizalgo.visualize.CircularLinkedListVisualize
+import com.example.vizalgo.visualize.BinaryTreeVisualize
+import com.example.vizalgo.visualize.HeapVisualize
+import com.example.vizalgo.visualize.BTreeVisualize
+import com.example.vizalgo.visualize.BPlusTreeVisualize
 
 class DSListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +54,12 @@ class DSListActivity : ComponentActivity() {
                             "Stack" -> StackVisualize::class.java
                             "Queue" -> QueueVisualize::class.java
                             "Singly Linked List", "Doubly Linked List" -> LinkedListVisualize::class.java
+                            "Circular Linked List" -> CircularLinkedListVisualize::class.java
+                            "Binary Search Tree" -> BinaryTreeVisualize::class.java
                             "AVL Tree" -> com.example.vizalgo.visualize.AVLTreeVisualize::class.java
+                            "Heap" -> HeapVisualize::class.java
+                            "B-Tree" -> BTreeVisualize::class.java
+                            "B+ Tree" -> BPlusTreeVisualize::class.java
                             else -> LearnActivity::class.java
                         }
                     }
@@ -109,7 +119,17 @@ fun DSListScreen(mode: String, onDSSelected: (String) -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
             DSItemCard("Doubly Linked List", R.drawable.splashbackground, cantoraFont) { onDSSelected("Doubly Linked List") }
             Spacer(modifier = Modifier.height(16.dp))
+            DSItemCard("Circular Linked List", R.drawable.splashbackground, cantoraFont) { onDSSelected("Circular Linked List") }
+            Spacer(modifier = Modifier.height(16.dp))
+            DSItemCard("Binary Search Tree", R.drawable.splashbackground, cantoraFont) { onDSSelected("Binary Search Tree") }
+            Spacer(modifier = Modifier.height(16.dp))
             DSItemCard("AVL Tree", R.drawable.splashbackground, cantoraFont) { onDSSelected("AVL Tree") }
+            Spacer(modifier = Modifier.height(16.dp))
+            DSItemCard("Heap", R.drawable.splashbackground, cantoraFont) { onDSSelected("Heap") }
+            Spacer(modifier = Modifier.height(16.dp))
+            DSItemCard("B-Tree", R.drawable.splashbackground, cantoraFont) { onDSSelected("B-Tree") }
+            Spacer(modifier = Modifier.height(16.dp))
+            DSItemCard("B+ Tree", R.drawable.splashbackground, cantoraFont) { onDSSelected("B+ Tree") }
             Spacer(modifier = Modifier.height(40.dp))
         }
     }
