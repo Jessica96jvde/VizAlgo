@@ -30,15 +30,18 @@ import androidx.compose.ui.unit.sp
 import com.example.vizalgo.R
 import com.example.vizalgo.utils.glow
 import com.example.vizalgo.learn.LearnActivity
-import com.example.vizalgo.game.GameChoice
-import com.example.vizalgo.visualize.StackVisualize
-import com.example.vizalgo.visualize.QueueVisualize
-import com.example.vizalgo.visualize.LinkedListVisualize
-import com.example.vizalgo.visualize.CircularLinkedListVisualize
-import com.example.vizalgo.visualize.BinaryTreeVisualize
-import com.example.vizalgo.visualize.HeapVisualize
-import com.example.vizalgo.visualize.BTreeVisualize
-import com.example.vizalgo.visualize.BPlusTreeVisualize
+import com.example.vizalgo.quiz.QuizActivity
+import com.example.vizalgo.game.Stack.StackGame
+import com.example.vizalgo.game.Queue.QueueGame
+import com.example.vizalgo.game.SinglyLinkedList.SinglyLinkedListGame
+import com.example.vizalgo.game.DoublyLinkedList.DoublyLinkedListGame
+import com.example.vizalgo.game.CircularLinkedList.CircularLinkedListGame
+import com.example.vizalgo.game.BinaryTree.BinaryTreeGame
+import com.example.vizalgo.game.AVLTree.AVLTreeGame
+import com.example.vizalgo.game.Heap.HeapGame
+import com.example.vizalgo.game.BTree.BTreeGame
+import com.example.vizalgo.game.BPlusTree.BPlusTreeGame
+import com.example.vizalgo.visualize.*
 
 class DSListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,8 +50,23 @@ class DSListActivity : ComponentActivity() {
         
         setContent {
             DSListScreen(mode) { dsName ->
-                val destinationActivity = when (mode) {
-                    "Game" -> GameChoice::class.java
+                val destinationActivity: Class<*> = when (mode) {
+                    "Quiz" -> QuizActivity::class.java
+                    "Challenge" -> {
+                        when (dsName) {
+                            "Stack" -> StackGame::class.java
+                            "Queue" -> QueueGame::class.java
+                            "Singly Linked List" -> SinglyLinkedListGame::class.java
+                            "Doubly Linked List" -> DoublyLinkedListGame::class.java
+                            "Circular Linked List" -> CircularLinkedListGame::class.java
+                            "Binary Search Tree" -> BinaryTreeGame::class.java
+                            "AVL Tree" -> AVLTreeGame::class.java
+                            "Heap" -> HeapGame::class.java
+                            "B-Tree" -> BTreeGame::class.java
+                            "B+ Tree" -> BPlusTreeGame::class.java
+                            else -> QueueGame::class.java
+                        }
+                    }
                     "Visualize" -> {
                         when (dsName) {
                             "Stack" -> StackVisualize::class.java
@@ -56,7 +74,7 @@ class DSListActivity : ComponentActivity() {
                             "Singly Linked List", "Doubly Linked List" -> LinkedListVisualize::class.java
                             "Circular Linked List" -> CircularLinkedListVisualize::class.java
                             "Binary Search Tree" -> BinaryTreeVisualize::class.java
-                            "AVL Tree" -> com.example.vizalgo.visualize.AVLTreeVisualize::class.java
+                            "AVL Tree" -> AVLTreeVisualize::class.java
                             "Heap" -> HeapVisualize::class.java
                             "B-Tree" -> BTreeVisualize::class.java
                             "B+ Tree" -> BPlusTreeVisualize::class.java
@@ -102,34 +120,33 @@ fun DSListScreen(mode: String, onDSSelected: (String) -> Unit) {
         ) {
             Spacer(modifier = Modifier.height(40.dp))
             
+            val title = when(mode) {
+                "Quiz" -> "Select for Quiz"
+                "Challenge" -> "Select Challenge"
+                "Visualize" -> "Select Visualizer"
+                else -> "$mode Mode"
+            }
+
             Text(
-                text = "$mode Data Structures",
+                text = title,
                 fontFamily = cantoraFont,
                 fontSize = 32.sp,
-                color = green4
+                color = green4,
+                fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            DSItemCard("Stack", R.drawable.splashbackground, cantoraFont) { onDSSelected("Stack") }
-            Spacer(modifier = Modifier.height(16.dp))
-            DSItemCard("Queue", R.drawable.splashbackground, cantoraFont) { onDSSelected("Queue") }
-            Spacer(modifier = Modifier.height(16.dp))
-            DSItemCard("Singly Linked List", R.drawable.splashbackground, cantoraFont) { onDSSelected("Singly Linked List") }
-            Spacer(modifier = Modifier.height(16.dp))
-            DSItemCard("Doubly Linked List", R.drawable.splashbackground, cantoraFont) { onDSSelected("Doubly Linked List") }
-            Spacer(modifier = Modifier.height(16.dp))
-            DSItemCard("Circular Linked List", R.drawable.splashbackground, cantoraFont) { onDSSelected("Circular Linked List") }
-            Spacer(modifier = Modifier.height(16.dp))
-            DSItemCard("Binary Search Tree", R.drawable.splashbackground, cantoraFont) { onDSSelected("Binary Search Tree") }
-            Spacer(modifier = Modifier.height(16.dp))
-            DSItemCard("AVL Tree", R.drawable.splashbackground, cantoraFont) { onDSSelected("AVL Tree") }
-            Spacer(modifier = Modifier.height(16.dp))
-            DSItemCard("Heap", R.drawable.splashbackground, cantoraFont) { onDSSelected("Heap") }
-            Spacer(modifier = Modifier.height(16.dp))
-            DSItemCard("B-Tree", R.drawable.splashbackground, cantoraFont) { onDSSelected("B-Tree") }
-            Spacer(modifier = Modifier.height(16.dp))
-            DSItemCard("B+ Tree", R.drawable.splashbackground, cantoraFont) { onDSSelected("B+ Tree") }
+            val dataStructures = listOf(
+                "Stack", "Queue", "Singly Linked List", "Doubly Linked List",
+                "Circular Linked List", "Binary Search Tree", "AVL Tree", "Heap",
+                "B-Tree", "B+ Tree"
+            )
+
+            dataStructures.forEach { ds ->
+                DSItemCard(ds, R.drawable.splashbackground, cantoraFont) { onDSSelected(ds) }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
             Spacer(modifier = Modifier.height(40.dp))
         }
     }
@@ -142,7 +159,7 @@ fun DSItemCard(title: String, imageRes: Int, font: FontFamily, onClick: () -> Un
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(130.dp)
+            .height(110.dp)
             .glow(color = green4, alpha = 0.5f, borderRadius = 24.dp, glowRadius = 15.dp)
             .border(
                 width = 3.dp,
@@ -171,7 +188,7 @@ fun DSItemCard(title: String, imageRes: Int, font: FontFamily, onClick: () -> Un
                 Text(
                     text = title,
                     fontFamily = font,
-                    fontSize = 30.sp,
+                    fontSize = 24.sp,
                     color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
@@ -179,7 +196,7 @@ fun DSItemCard(title: String, imageRes: Int, font: FontFamily, onClick: () -> Un
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(32.dp)
                 )
             }
         }

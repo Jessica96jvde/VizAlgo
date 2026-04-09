@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,9 +15,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vizalgo.R
@@ -48,15 +51,15 @@ fun QueueScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp),
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
             Text(
                 text = "Queue Visualizer",
                 fontFamily = cantoraFont,
-                fontSize = 42.sp,
+                fontSize = 32.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
@@ -101,7 +104,7 @@ fun QueueScreen() {
                         Box(
                             modifier = Modifier
                                 .weight(1f, fill = false)
-                                .height(120.dp)
+                                .height(100.dp)
                                 .widthIn(min = 40.dp, max = 80.dp)
                                 .background(glowColor, shape)
                                 .glassmorphic(shape = shape),
@@ -110,7 +113,7 @@ fun QueueScreen() {
                             Text(
                                 text = value.toString(),
                                 color = Color.White,
-                                fontSize = if (queue.size > 8) 16.sp else 24.sp,
+                                fontSize = if (queue.size > 8) 16.sp else 22.sp,
                                 fontWeight = FontWeight.Bold,
                                 maxLines = 1
                             )
@@ -119,87 +122,88 @@ fun QueueScreen() {
                 }
             }
 
-            // INPUT + BUTTONS
+            // INPUT + BUTTONS PANEL
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 20.dp)
+                    .padding(bottom = 16.dp)
                     .glassmorphic(RoundedCornerShape(24.dp)),
                 colors = CardDefaults.cardColors(containerColor = Color.Transparent)
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     TextField(
                         value = input,
                         onValueChange = { if (it.all { char -> char.isDigit() } && it.length <= 4) input = it },
-                        placeholder = { Text("Value", color = Color.White.copy(alpha = 0.4f)) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 8.dp),
+                        placeholder = { Text("Value", color = Color.White.copy(alpha = 0.5f)) },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        textStyle = TextStyle(color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold),
                         colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.White.copy(alpha = 0.1f),
                             unfocusedContainerColor = Color.Transparent,
                             focusedTextColor = Color.White,
                             unfocusedTextColor = Color.White,
                             cursorColor = Color.White,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
+                            focusedIndicatorColor = green4,
+                            unfocusedIndicatorColor = Color.White.copy(alpha = 0.4f)
                         ),
-                        singleLine = true
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
 
-                    Button(
-                        onClick = {
-                            if (input.isNotEmpty()) {
-                                queue = queue + input.toInt()
-                                recentlyAddedIndex = queue.size - 1
-                                input = ""
-                                scope.launch {
-                                    delay(500)
-                                    recentlyAddedIndex = -1
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                if (input.isNotEmpty()) {
+                                    queue = queue + input.toInt()
+                                    recentlyAddedIndex = queue.size - 1
+                                    input = ""
+                                    scope.launch {
+                                        delay(500)
+                                        recentlyAddedIndex = -1
+                                    }
                                 }
-                            }
-                        },
-                        modifier = Modifier.height(50.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = green4)
-                    ) {
-                        Text("Enqueue", color = Color.White, fontWeight = FontWeight.Bold)
-                    }
+                            },
+                            modifier = Modifier.weight(1f).height(48.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = green4),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) {
+                            Text("Enqueue", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Button(
-                        onClick = {
-                            if (queue.isNotEmpty()) {
-                                recentlyDeletedIndex = 0
-                                scope.launch {
-                                    delay(500)
-                                    queue = queue.drop(1)
-                                    recentlyDeletedIndex = -1
+                        Button(
+                            onClick = {
+                                if (queue.isNotEmpty()) {
+                                    recentlyDeletedIndex = 0
+                                    scope.launch {
+                                        delay(500)
+                                        queue = queue.drop(1)
+                                        recentlyDeletedIndex = -1
+                                    }
                                 }
-                            }
-                        },
-                        modifier = Modifier.height(50.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
-                    ) {
-                        Text("Dequeue", color = Color.White, fontWeight = FontWeight.Bold)
-                    }
+                            },
+                            modifier = Modifier.weight(1f).height(48.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) {
+                            Text("Dequeue", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Button(
-                        onClick = { queue = emptyList(); input = "" },
-                        modifier = Modifier.height(50.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C))
-                    ) {
-                        Text("Clear", color = Color.White, fontWeight = FontWeight.Bold)
+                        Button(
+                            onClick = { queue = emptyList(); input = "" },
+                            modifier = Modifier.weight(1f).height(48.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C)),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) {
+                            Text("Clear", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
                     }
                 }
             }

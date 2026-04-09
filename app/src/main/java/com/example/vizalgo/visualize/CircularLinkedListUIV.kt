@@ -396,14 +396,14 @@ fun CircularLinkedListScreen() {
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            ActionButton("Pop Front", Color(0xFFD32F2F), Modifier.weight(1f)) {
+                            ActionButton("Delete Front", Color(0xFFD32F2F), Modifier.weight(1f)) {
                                 if (list.isNotEmpty()) {
                                     recentlyDeletedIndex = 0
                                     scope.launch { delay(600); list = list.drop(1); recentlyDeletedIndex = -1 }
                                 }
                             }
                             Spacer(modifier = Modifier.width(8.dp))
-                            ActionButton("Pop Back", Color(0xFFD32F2F), Modifier.weight(1f)) {
+                            ActionButton("Delete Back", Color(0xFFD32F2F), Modifier.weight(1f)) {
                                 if (list.isNotEmpty()) {
                                     recentlyDeletedIndex = list.lastIndex
                                     scope.launch { delay(600); list = list.dropLast(1); recentlyDeletedIndex = -1 }

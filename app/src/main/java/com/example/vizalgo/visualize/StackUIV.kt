@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -135,18 +136,19 @@ fun StackScreen() {
                     TextField(
                         value = input,
                         onValueChange = { if (it.all { char -> char.isDigit() } && it.length <= 4) input = it },
-                        placeholder = { Text("Value", color = Color.White.copy(alpha = 0.4f)) },
+                        placeholder = { Text("Value", color = Color.White.copy(alpha = 0.5f)) },
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 8.dp),
+                        textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
                         colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.White.copy(alpha = 0.1f),
                             unfocusedContainerColor = Color.Transparent,
                             focusedTextColor = Color.White,
                             unfocusedTextColor = Color.White,
                             cursorColor = Color.White,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
+                            focusedIndicatorColor = green4,
+                            unfocusedIndicatorColor = Color.White.copy(alpha = 0.3f)
                         ),
                         singleLine = true
                     )
