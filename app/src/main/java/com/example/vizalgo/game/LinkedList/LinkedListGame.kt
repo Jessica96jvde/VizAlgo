@@ -1,4 +1,4 @@
-package com.example.vizalgo.game.Queue
+package com.example.vizalgo.game.LinkedList
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,11 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.vizalgo.R
 
-class QueueGame : ComponentActivity() {
+class LinkedListGame : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val dsName = intent.getStringExtra("DS_NAME") ?: "Linked List"
         setContent {
-            QueueGameScreen {
+            LinkedListGameScreen(dsName) {
                 finish()
             }
         }
@@ -31,7 +32,7 @@ class QueueGame : ComponentActivity() {
 }
 
 @Composable
-fun QueueGameScreen(onBack: () -> Unit) {
+fun LinkedListGameScreen(dsName: String, onBack: () -> Unit) {
     val cantoraFont = FontFamily(Font(R.font.cantora_one))
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -51,14 +52,14 @@ fun QueueGameScreen(onBack: () -> Unit) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Queue Challenge",
+                text = "$dsName Challenge",
                 fontFamily = cantoraFont,
                 fontSize = 32.sp,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
-                text = "Coming Soon: Master the FIFO principle with interactive challenges!",
+                text = "Coming Soon: Manipulate pointers and nodes to solve these structural puzzles!",
                 color = Color.White.copy(alpha = 0.8f),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )

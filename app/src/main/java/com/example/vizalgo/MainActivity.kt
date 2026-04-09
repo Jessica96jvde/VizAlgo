@@ -48,6 +48,7 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.vizalgo.authentication.AuthenticationActivity
 import com.example.vizalgo.dslist.DSListActivity
+import com.example.vizalgo.game.GameModeActivity
 import com.example.vizalgo.userdashboard.UserDashboard
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -59,8 +60,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             HomeScreen(
                 onCategoryClick = { mode ->
-                    val intent = Intent(this, DSListActivity::class.java).apply {
-                        putExtra("MODE", mode)
+                    val intent = if (mode == "Game") {
+                        Intent(this, GameModeActivity::class.java)
+                    } else {
+                        Intent(this, DSListActivity::class.java).apply {
+                            putExtra("MODE", mode)
+                        }
                     }
                     startActivity(intent)
                 },

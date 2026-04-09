@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -44,6 +45,7 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
     
     var recentlyAddedIndex by remember { mutableStateOf(-1) }
     var recentlyDeletedIndex by remember { mutableStateOf(-1) }
+    var searchedIndex by remember { mutableStateOf(-1) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -102,6 +104,7 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
                                 glowColor = when {
                                     index == recentlyAddedIndex -> Color.Blue
                                     index == recentlyDeletedIndex -> Color.Red
+                                    index == searchedIndex -> Color.Yellow
                                     else -> null
                                 },
                                 isReversed = false
@@ -151,17 +154,19 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
                         TextField(
                             value = input,
                             onValueChange = { if (it.all { char -> char.isDigit() } && it.length <= 4) input = it },
-                            placeholder = { Text("Value", color = Color.White.copy(alpha = 0.4f)) },
+                            placeholder = { Text("Value", color = Color.White.copy(alpha = 0.5f)) },
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(horizontal = 4.dp),
+                            textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White.copy(alpha = 0.05f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
                                 unfocusedContainerColor = Color.Transparent,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
                                 cursorColor = Color.White,
-                                focusedIndicatorColor = green4
+                                focusedIndicatorColor = green4,
+                                unfocusedIndicatorColor = Color.White.copy(alpha = 0.3f)
                             ),
                             singleLine = true
                         )
@@ -169,17 +174,19 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
                         TextField(
                             value = posInput,
                             onValueChange = { if (it.all { char -> char.isDigit() } && it.length <= 2) posInput = it },
-                            placeholder = { Text("Pos", color = Color.White.copy(alpha = 0.4f)) },
+                            placeholder = { Text("Pos", color = Color.White.copy(alpha = 0.5f)) },
                             modifier = Modifier
-                                .width(70.dp)
+                                .width(80.dp)
                                 .padding(horizontal = 4.dp),
+                            textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White.copy(alpha = 0.05f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
                                 unfocusedContainerColor = Color.Transparent,
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
                                 cursorColor = Color.White,
-                                focusedIndicatorColor = green4
+                                focusedIndicatorColor = green4,
+                                unfocusedIndicatorColor = Color.White.copy(alpha = 0.3f)
                             ),
                             singleLine = true
                         )
@@ -233,14 +240,14 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            ActionButton("Pop Front", Color(0xFFD32F2F), Modifier.weight(1f)) {
+                            ActionButton("Delete Front", Color(0xFFC54545), Modifier.weight(1f)) {
                                 if (list.isNotEmpty()) {
                                     recentlyDeletedIndex = 0
                                     scope.launch { delay(500); list = list.drop(1); recentlyDeletedIndex = -1 }
                                 }
                             }
                             Spacer(modifier = Modifier.width(8.dp))
-                            ActionButton("Pop Back", Color(0xFFD32F2F), Modifier.weight(1f)) {
+                            ActionButton("Delete Back", Color(0xFFD32F2F), Modifier.weight(1f)) {
                                 if (list.isNotEmpty()) {
                                     recentlyDeletedIndex = list.lastIndex
                                     scope.launch { delay(500); list = list.dropLast(1); recentlyDeletedIndex = -1 }
@@ -256,6 +263,26 @@ fun LinkedListScreen(isDoubly: Boolean = false) {
                                     }
                                 }
                             }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            ActionButton("Search", Color(0xFFFFA000), Modifier.weight(1f)) {
+                                if (input.isNotEmpty()) {
+                                    val target = input.toIntOrNull()
+                                    if (target != null) {
+                                        val index = list.indexOf(target)
+                                        if (index != -1) {
+                                            searchedIndex = index
+                                            scope.launch {
+                                                delay(1500)
+                                                searchedIndex = -1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Box(modifier = Modifier.weight(2f)) // Placeholder
                         }
                     }
                 }
