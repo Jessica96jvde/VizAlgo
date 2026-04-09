@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -27,127 +28,111 @@ import com.example.vizalgo.R
 import com.example.vizalgo.utils.glassmorphic
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.max
 
-class AVLNode(var value: Int) {
-    var left: AVLNode? = null
-    var right: AVLNode? = null
-    var height: Int = 1
-}
+enum class HeapType { MAX, MIN }
 
-class AVLTree {
-    var root: AVLNode? = null
+class Heap(private val type: HeapType) {
+    private val heap = mutableListOf<Int>()
 
-    fun getHeight(node: AVLNode?): Int = node?.height ?: 0
+    fun getHeap(): List<Int> = heap.toList()
 
-    private fun getBalance(node: AVLNode?): Int = 
-        if (node == null) 0 else getHeight(node.left) - getHeight(node.right)
-
-    private fun rightRotate(y: AVLNode): AVLNode {
-        val x = y.left!!
-        val T2 = x.right
-        x.right = y
-        y.left = T2
-        y.height = max(getHeight(y.left), getHeight(y.right)) + 1
-        x.height = max(getHeight(x.left), getHeight(x.right)) + 1
-        return x
+    private fun compare(a: Int, b: Int): Boolean {
+        return if (type == HeapType.MAX) a > b else a < b
     }
 
-    private fun leftRotate(x: AVLNode): AVLNode {
-        val y = x.right!!
-        val T2 = y.left
-        y.left = x
-        x.right = T2
-        x.height = max(getHeight(x.left), getHeight(x.right)) + 1
-        y.height = max(getHeight(y.left), getHeight(y.right)) + 1
-        return y
+    fun insert(value: Int) {
+        heap.add(value)
+        siftUp(heap.size - 1)
     }
 
-    fun insert(root: AVLNode?, value: Int): AVLNode {
-        if (root == null) return AVLNode(value)
-
-        if (value < root.value)
-            root.left = insert(root.left, value)
-        else if (value > root.value)
-            root.right = insert(root.right, value)
-        else return root
-
-        root.height = 1 + max(getHeight(root.left), getHeight(root.right))
-        val balance = getBalance(root)
-
-        // Left Left Case
-        if (balance > 1 && value < root.left!!.value) return rightRotate(root)
-
-        // Right Right Case
-        if (balance < -1 && value > root.right!!.value) return leftRotate(root)
-
-        // Left Right Case
-        if (balance > 1 && value > root.left!!.value) {
-            root.left = leftRotate(root.left!!)
-            return rightRotate(root)
+    private fun siftUp(index: Int) {
+        var curr = index
+        while (curr > 0) {
+            val parent = (curr - 1) / 2
+            if (compare(heap[curr], heap[parent])) {
+                val temp = heap[curr]
+                heap[curr] = heap[parent]
+                heap[parent] = temp
+                curr = parent
+            } else break
         }
-
-        // Right Left Case
-        if (balance < -1 && value < root.right!!.value) {
-            root.right = rightRotate(root.right!!)
-            return leftRotate(root)
-        }
-
-        return root
     }
 
-    fun delete(root: AVLNode?, value: Int): AVLNode? {
-        if (root == null) return root
-
-        if (value < root.value)
-            root.left = delete(root.left, value)
-        else if (value > root.value)
-            root.right = delete(root.right, value)
-        else {
-            if (root.left == null || root.right == null) {
-                val temp = root.left ?: root.right
-                if (temp == null) return null else return temp
-            } else {
-                val temp = minValueNode(root.right!!)
-                root.value = temp.value
-                root.right = delete(root.right, temp.value)
-            }
+    fun extract(): Int? {
+        if (heap.isEmpty()) return null
+        val rootValue = heap[0]
+        val last = heap.removeAt(heap.size - 1)
+        if (heap.isNotEmpty()) {
+            heap[0] = last
+            siftDown(0)
         }
-
-        root.height = 1 + max(getHeight(root.left), getHeight(root.right))
-        val balance = getBalance(root)
-
-        if (balance > 1 && getBalance(root.left) >= 0) return rightRotate(root)
-        if (balance > 1 && getBalance(root.left) < 0) {
-            root.left = leftRotate(root.left!!)
-            return rightRotate(root)
-        }
-        if (balance < -1 && getBalance(root.right) <= 0) return leftRotate(root)
-        if (balance < -1 && getBalance(root.right) > 0) {
-            root.right = rightRotate(root.right!!)
-            return leftRotate(root)
-        }
-        return root
+        return rootValue
     }
 
-    private fun minValueNode(node: AVLNode): AVLNode {
-        var current = node
-        while (current.left != null) current = current.left!!
-        return current
+    private fun siftDown(index: Int) {
+        var curr = index
+        while (true) {
+            val left = 2 * curr + 1
+            val right = 2 * curr + 2
+            var target = curr
+            if (left < heap.size && compare(heap[left], heap[target])) target = left
+            if (right < heap.size && compare(heap[right], heap[target])) target = right
+            if (target != curr) {
+                val temp = heap[curr]
+                heap[curr] = heap[target]
+                heap[target] = temp
+                curr = target
+            } else break
+        }
+    }
+
+    fun clear() {
+        heap.clear()
     }
 }
 
 @Composable
-fun AVLTreeScreen() {
+fun HeapScreen() {
     val cantoraFont = FontFamily(Font(R.font.cantora_one))
     val green4 = colorResource(id = R.color.green4)
-    val tree = remember { AVLTree() }
-    var rootState by remember { mutableStateOf<AVLNode?>(null) }
+    
+    var showDialog by remember { mutableStateOf(true) }
+    var heapType by remember { mutableStateOf(HeapType.MAX) }
+    val heap = remember(heapType) { Heap(heapType) }
+    
+    var heapState by remember { mutableStateOf(listOf<Int>()) }
     var input by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     
     var recentlyAddedValue by remember { mutableStateOf(-1) }
     var recentlyDeletedValue by remember { mutableStateOf(-1) }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text("Choose Heap Type", fontFamily = cantoraFont) },
+            text = { Text("Select whether you want to visualize a Max Heap or a Min Heap.", fontFamily = cantoraFont) },
+            confirmButton = {
+                Button(onClick = { 
+                    heapType = HeapType.MAX
+                    showDialog = false 
+                }) {
+                    Text("Max Heap")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { 
+                    heapType = HeapType.MIN
+                    showDialog = false 
+                }) {
+                    Text("Min Heap")
+                }
+            },
+            containerColor = Color(0xFF1E1E1E),
+            titleContentColor = Color.White,
+            textContentColor = Color.White.copy(alpha = 0.8f)
+        )
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -164,7 +149,7 @@ fun AVLTreeScreen() {
         ) {
             Spacer(modifier = Modifier.height(30.dp))
             Text(
-                text = "AVL Tree Visualizer",
+                text = if (heapType == HeapType.MAX) "Max Heap Visualizer" else "Min Heap Visualizer",
                 fontFamily = cantoraFont,
                 fontSize = 32.sp,
                 color = Color.White,
@@ -172,10 +157,12 @@ fun AVLTreeScreen() {
             )
 
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                rootState?.let {
-                    TreeLayout(it, recentlyAddedValue, recentlyDeletedValue)
-                } ?: Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Tree is empty", color = Color.White.copy(alpha = 0.5f))
+                if (heapState.isNotEmpty()) {
+                    HeapLayout(heapState, recentlyAddedValue, recentlyDeletedValue)
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Heap is empty", color = Color.White.copy(alpha = 0.5f), fontFamily = cantoraFont, fontSize = 20.sp)
+                    }
                 }
             }
 
@@ -207,7 +194,8 @@ fun AVLTreeScreen() {
                         onClick = {
                             if (input.isNotEmpty()) {
                                 val valToInsert = input.toInt()
-                                rootState = tree.insert(rootState, valToInsert)
+                                heap.insert(valToInsert)
+                                heapState = heap.getHeap()
                                 recentlyAddedValue = valToInsert
                                 input = ""
                                 scope.launch {
@@ -225,26 +213,30 @@ fun AVLTreeScreen() {
 
                     Button(
                         onClick = {
-                            if (input.isNotEmpty()) {
-                                val valToDelete = input.toInt()
+                            if (heapState.isNotEmpty()) {
+                                val valToDelete = heapState[0]
                                 recentlyDeletedValue = valToDelete
                                 scope.launch {
                                     delay(500)
-                                    rootState = tree.delete(rootState, valToDelete)
+                                    heap.extract()
+                                    heapState = heap.getHeap()
                                     recentlyDeletedValue = -1
                                 }
-                                input = ""
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
                     ) {
-                        Text("Delete")
+                        Text(if (heapType == HeapType.MAX) "Extract Max" else "Extract Min")
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Button(
-                        onClick = { rootState = null; tree.root = null; input = "" },
+                        onClick = { 
+                            heap.clear()
+                            heapState = emptyList()
+                            input = "" 
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C))
                     ) {
                         Text("Clear")
@@ -256,51 +248,62 @@ fun AVLTreeScreen() {
 }
 
 @Composable
-fun TreeLayout(root: AVLNode, addedVal: Int, deletedVal: Int) {
+fun HeapLayout(heap: List<Int>, addedVal: Int, deletedVal: Int) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val width = constraints.maxWidth.toFloat()
-        val height = constraints.maxHeight.toFloat()
-        val density = LocalDensity.current
 
         Canvas(modifier = Modifier.fillMaxSize()) {
-            drawConnections(this, root, width / 2, 100f, width / 4, 150f, 0)
+            drawHeapConnections(this, heap, 0, width / 2, 100f, width / 4, 150f)
         }
         
-        DrawNodes(root, width / 2, 100f, width / 4, 150f, addedVal, deletedVal, 0)
+        DrawHeapNodes(heap, 0, width / 2, 100f, width / 4, 150f, addedVal, deletedVal, 0)
     }
 }
 
-private fun drawConnections(
-    scope: androidx.compose.ui.graphics.drawscope.DrawScope,
-    node: AVLNode,
+private fun drawHeapConnections(
+    scope: DrawScope,
+    heap: List<Int>,
+    index: Int,
     x: Float,
     y: Float,
     xOffset: Float,
-    yOffset: Float,
-    level: Int
+    yOffset: Float
 ) {
-    node.left?.let {
+    val left = 2 * index + 1
+    val right = 2 * index + 2
+
+    if (left < heap.size) {
         scope.drawLine(
             color = Color.White.copy(alpha = 0.3f),
             start = Offset(x, y),
             end = Offset(x - xOffset, y + yOffset),
             strokeWidth = 3f
         )
-        drawConnections(scope, it, x - xOffset, y + yOffset, xOffset / 1.8f, yOffset, level + 1)
+        drawHeapConnections(scope, heap, left, x - xOffset, y + yOffset, xOffset / 1.8f, yOffset)
     }
-    node.right?.let {
+    if (right < heap.size) {
         scope.drawLine(
             color = Color.White.copy(alpha = 0.3f),
             start = Offset(x, y),
             end = Offset(x + xOffset, y + yOffset),
             strokeWidth = 3f
         )
-        drawConnections(scope, it, x + xOffset, y + yOffset, xOffset / 1.8f, yOffset, level + 1)
+        drawHeapConnections(scope, heap, right, x + xOffset, y + yOffset, xOffset / 1.8f, yOffset)
     }
 }
 
 @Composable
-fun DrawNodes(node: AVLNode, x: Float, y: Float, xOffset: Float, yOffset: Float, addedVal: Int, deletedVal: Int, level: Int) {
+fun DrawHeapNodes(
+    heap: List<Int>,
+    index: Int,
+    x: Float,
+    y: Float,
+    xOffset: Float,
+    yOffset: Float,
+    addedVal: Int,
+    deletedVal: Int,
+    level: Int
+) {
     val green4 = colorResource(id = R.color.green4)
     val density = LocalDensity.current
     
@@ -308,9 +311,12 @@ fun DrawNodes(node: AVLNode, x: Float, y: Float, xOffset: Float, yOffset: Float,
     val fontSize = (12 - level).coerceAtLeast(8).sp
     val halfSize = with(density) { (nodeSize / 2).toPx() }
     
-    val glowColor = when (node.value) {
-        addedVal -> Color.Blue.copy(alpha = 0.5f)
-        deletedVal -> Color.Red.copy(alpha = 0.5f)
+    val isRecentlyAdded = addedVal != -1 && index < heap.size && heap[index] == addedVal
+    val isRecentlyDeleted = deletedVal != -1 && index == 0
+    
+    val nodeGlowColor = when {
+        isRecentlyAdded -> Color.Blue.copy(alpha = 0.5f)
+        isRecentlyDeleted -> Color.Red.copy(alpha = 0.5f)
         else -> Color.Transparent
     }
 
@@ -321,19 +327,26 @@ fun DrawNodes(node: AVLNode, x: Float, y: Float, xOffset: Float, yOffset: Float,
                 y = with(density) { (y - halfSize).toDp() }
             )
             .size(nodeSize)
-            .background(glowColor, CircleShape)
-            .border(2.dp, if (glowColor != Color.Transparent) glowColor else Color.White.copy(alpha = 0.8f), CircleShape)
+            .background(nodeGlowColor, CircleShape)
+            .border(2.dp, if (nodeGlowColor != Color.Transparent) nodeGlowColor else Color.White.copy(alpha = 0.8f), CircleShape)
             .background(green4.copy(alpha = 0.9f), CircleShape),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = node.value.toString(),
+            text = heap[index].toString(),
             color = Color.White,
             fontSize = fontSize,
             fontWeight = FontWeight.Bold
         )
     }
 
-    node.left?.let { DrawNodes(it, x - xOffset, y + yOffset, xOffset / 1.8f, yOffset, addedVal, deletedVal, level + 1) }
-    node.right?.let { DrawNodes(it, x + xOffset, y + yOffset, xOffset / 1.8f, yOffset, addedVal, deletedVal, level + 1) }
+    val left = 2 * index + 1
+    val right = 2 * index + 2
+    
+    if (left < heap.size) {
+        DrawHeapNodes(heap, left, x - xOffset, y + yOffset, xOffset / 1.8f, yOffset, addedVal, deletedVal, level + 1)
+    }
+    if (right < heap.size) {
+        DrawHeapNodes(heap, right, x + xOffset, y + yOffset, xOffset / 1.8f, yOffset, addedVal, deletedVal, level + 1)
+    }
 }

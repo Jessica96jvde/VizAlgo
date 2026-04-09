@@ -189,6 +189,17 @@ fun StackScreen() {
                     ) {
                         Text("Pop", color = Color.White, fontWeight = FontWeight.Bold)
                     }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(
+                        onClick = { stack = emptyList(); input = "" },
+                        modifier = Modifier.height(50.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C))
+                    ) {
+                        Text("Clear", color = Color.White, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
