@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
@@ -219,6 +220,7 @@ fun HomeScreen(onCategoryClick: (String) -> Unit, onLogout: () -> Unit) {
     }
 }
 
+@OptIn(UnstableApi::class)
 @Composable
 fun VideoBackground(resId: Int) {
     val context = LocalContext.current
@@ -251,6 +253,7 @@ fun VideoBackground(resId: Int) {
     )
 }
 
+@OptIn(UnstableApi::class)
 @Composable
 fun HomeDivisionCard(title: String, videoResId: Int, font: FontFamily, onClick: () -> Unit) {
     val green2 = colorResource(id = R.color.green2)
