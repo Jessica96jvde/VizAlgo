@@ -191,11 +191,43 @@ fun getQuestionsForDS(dsName: String): List<QuizQuestion> {
         )
         "Singly Linked List" -> listOf(
             QuizQuestion("How many pointers does each node have in a Singly Linked List?", listOf("0", "1", "2", "3"), 1),
-            QuizQuestion("What does the last node's 'next' pointer point to?", listOf("Head", "Previous", "null", "Tail"), 2)
+            QuizQuestion("What does the last node's 'next' pointer point to?", listOf("Head", "Previous", "null", "Tail"), 2),
+            QuizQuestion("Time complexity of inserting at the beginning?", listOf("O(1)", "O(n)", "O(log n)", "O(n^2)"), 0)
+        )
+        "Doubly Linked List" -> listOf(
+            QuizQuestion("What pointers does a Doubly Linked List node have?", listOf("Next only", "Prev only", "Next and Prev", "None"), 2),
+            QuizQuestion("Advantage of DLL over SLL?", listOf("Uses less memory", "Bidirectional traversal", "Simpler implementation", "Faster access"), 1),
+            QuizQuestion("Time complexity to delete a node if pointer is given?", listOf("O(n)", "O(log n)", "O(1)", "O(n^2)"), 2)
+        )
+        "Circular Linked List" -> listOf(
+            QuizQuestion("What does the last node in a Circular LL point to?", listOf("null", "Tail", "Head", "Middle"), 2),
+            QuizQuestion("A primary use case for Circular LL is:", listOf("Undo/Redo", "Round-Robin Scheduling", "Browser History", "Call Stack"), 1),
+            QuizQuestion("Which condition identifies the end of a Circular LL (pointer p)?", listOf("p.next == null", "p.next == head", "p == null", "p == tail"), 1)
         )
         "Binary Search Tree" -> listOf(
             QuizQuestion("In a BST, values smaller than the root go to the...", listOf("Right", "Left", "Middle", "Bottom"), 1),
-            QuizQuestion("What is the time complexity for search in a balanced BST?", listOf("O(1)", "O(n)", "O(log n)", "O(n^2)"), 2)
+            QuizQuestion("What is the time complexity for search in a balanced BST?", listOf("O(1)", "O(n)", "O(log n)", "O(n^2)"), 2),
+            QuizQuestion("In-order traversal of a BST gives values in:", listOf("Decreasing order", "Random order", "Increasing order", "Level order"), 2)
+        )
+        "AVL Tree" -> listOf(
+            QuizQuestion("An AVL Tree is a self-balancing...", listOf("Heap", "Queue", "Binary Search Tree", "Linked List"), 2),
+            QuizQuestion("What is the maximum allowed balance factor in AVL?", listOf("0", "1", "2", "log n"), 1),
+            QuizQuestion("If balance factor becomes 2, what is needed?", listOf("Deletion", "Insertion", "Rotation", "Nothing"), 2)
+        )
+        "Heap" -> listOf(
+            QuizQuestion("In a Min-Heap, the root is always the:", listOf("Largest", "Smallest", "Middle", "Median"), 1),
+            QuizQuestion("Complexity of extracting min from a heap (n elements)?", listOf("O(1)", "O(log n)", "O(n)", "O(n log n)"), 1),
+            QuizQuestion("Heaps are usually implemented using:", listOf("Linked Lists", "Arrays", "Hash Tables", "Stacks"), 1)
+        )
+        "B-Tree" -> listOf(
+            QuizQuestion("B-Trees are optimized for:", listOf("In-memory storage", "Disk-based storage", "Real-time graphics", "CPU Caches"), 1),
+            QuizQuestion("In a B-Tree of order m, max children per node?", listOf("m", "m-1", "2m", "m/2"), 0),
+            QuizQuestion("All leaf nodes in a B-Tree must be at:", listOf("Level 0", "The same level", "Different levels", "Level 1"), 1)
+        )
+        "B+ Tree" -> listOf(
+            QuizQuestion("In a B+ Tree, data records are stored in:", listOf("Root node", "Internal nodes", "Leaf nodes", "All nodes"), 2),
+            QuizQuestion("What links leaf nodes in a B+ Tree?", listOf("Next pointers", "Parent pointers", "Child pointers", "Nothing"), 0),
+            QuizQuestion("Benefit of B+ Tree leaf linking?", listOf("Faster search", "Range queries", "Less memory", "Faster insertion"), 1)
         )
         else -> listOf(
             QuizQuestion("What is a Data Structure?", listOf("A way to store data", "A programming language", "A type of computer", "An OS"), 0)

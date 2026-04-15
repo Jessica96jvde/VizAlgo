@@ -99,7 +99,6 @@ class BPlusTreeNode(val m: Int, var isLeaf: Boolean) {
             while (i < keys.size && k >= keys[i]) i++
             children[i].remove(k)
             
-            // Minimal rebalancing logic for visualization
             if (i < keys.size && children[i+1].isLeaf && children[i+1].keys.isNotEmpty()) {
                 keys[i] = children[i+1].keys[0]
             }
