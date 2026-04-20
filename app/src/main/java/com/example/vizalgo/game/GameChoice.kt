@@ -75,7 +75,7 @@ fun GameChoiceScreen(dsName: String, onModeSelected: (String) -> Unit) {
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.6f)))
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.4f)))
 
         Column(
             modifier = Modifier

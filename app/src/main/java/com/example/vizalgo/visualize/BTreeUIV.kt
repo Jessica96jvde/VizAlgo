@@ -200,7 +200,7 @@ fun BTreeScreen() {
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.6f)))
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.4f)))
 
         if (isPortrait) {
             // Orientation Overlay
