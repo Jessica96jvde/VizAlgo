@@ -26,7 +26,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import com.example.vizalgo.R
+import com.example.vizalgo.game.ProgressManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -34,6 +36,7 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun UserDashboard(username: String, cantoraFont: FontFamily, onLogout: () -> Unit) {
+    val context = LocalContext.current
     val poppins = FontFamily(Font(R.font.poppins_light))
     var showAllLeaderboard by remember { mutableStateOf(false) }
     val db = FirebaseFirestore.getInstance()
@@ -52,22 +55,29 @@ fun UserDashboard(username: String, cantoraFont: FontFamily, onLogout: () -> Uni
                 .await()
             
             leaderboardData = snapshot.documents.map { doc ->
-                // Try to get 'xp', then 'stars', then default to 0
-                val xpValue = doc.getLong("xp")?.toInt() 
-                    ?: (doc.getLong("stars")?.toInt()?.times(100)) 
-                    ?: 0
+                val xpFromDoc = doc.getLong("xp")?.toInt() ?: 0
+                val starsFromDoc = doc.getLong("stars")?.toInt() ?: 0
+                
+                // If XP is missing or 0, calculate it from stars (1 star = 100 XP base)
+                // This ensures old players appear in the leaderboard immediately.
+                val finalXP = if (xpFromDoc > 0) xpFromDoc else (starsFromDoc * 100)
                     
                 LeaderboardEntry(
                     name = doc.getString("username") ?: "Unknown",
-                    points = xpValue,
+                    points = finalXP,
                     color = if (doc.getString("username") == username) Color(0xFF81C784) else Color(0xFF64B5F6)
                 )
             }.sortedByDescending { it.points }
 
             val currentUserDoc = db.collection("users").document(auth.currentUser?.uid ?: "").get().await()
-            userXP = currentUserDoc.getLong("xp")?.toInt() 
-                ?: (currentUserDoc.getLong("stars")?.toInt()?.times(100)) 
-                ?: 0
+            val remoteXP = currentUserDoc.getLong("xp")?.toInt() ?: 0
+            val remoteStars = currentUserDoc.getLong("stars")?.toInt() ?: 0
+            
+            // Calculate local XP from current device progress
+            val localXP = ProgressManager(context).calculateTotalXP()
+            
+            // Use the maximum available value to prevent progress loss
+            userXP = maxOf(localXP, remoteXP, remoteStars * 100)
             
         } catch (e: Exception) {
             e.printStackTrace()

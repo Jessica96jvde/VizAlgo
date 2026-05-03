@@ -50,6 +50,7 @@ import androidx.media3.ui.PlayerView
 import com.example.vizalgo.authentication.AuthenticationActivity
 import com.example.vizalgo.dslist.DSListActivity
 import com.example.vizalgo.game.GameModeActivity
+import com.example.vizalgo.game.ProgressManager
 import com.example.vizalgo.userdashboard.UserDashboard
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -90,13 +91,18 @@ fun HomeScreen(onCategoryClick: (String) -> Unit, onLogout: () -> Unit) {
     
     // State for user data
     var username by remember { mutableStateOf("Loading...") }
+    val context = LocalContext.current
+    val progressManager = remember { ProgressManager(context) }
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
 
-    // Fetch user data from Firestore
+    // Fetch user data from Firestore and Sync Progress
     LaunchedEffect(Unit) {
         val uid = auth.currentUser?.uid
         if (uid != null) {
+            // Sync local stars to Firestore XP
+            progressManager.syncXPToFirestore()
+
             db.collection("users").document(uid).get()
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {

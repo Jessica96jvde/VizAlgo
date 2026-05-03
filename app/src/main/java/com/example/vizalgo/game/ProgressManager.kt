@@ -16,7 +16,7 @@ class ProgressManager(context: Context) {
     }
 
     fun calculateTotalXP(): Int {
-        val dsList = listOf("Stack", "Queue", "Singly Linked List", "Doubly Linked List", "Circular Linked List", "Binary Search Tree", "AVL Tree", "Heap", "B-Tree", "B+ Tree")
+        val dsList = listOf("Stack", "Queue", "Singly Linked List", "Doubly LL", "Circular LL", "Binary Search Tree", "AVL Tree", "Heap", "B-Tree", "B+ Tree")
         var totalXP = 0
         dsList.forEach { ds ->
             val starsMap = getAllLevelStars(ds)
@@ -36,11 +36,28 @@ class ProgressManager(context: Context) {
         val uid = auth.currentUser?.uid
         if (uid != null) {
             val totalXP = calculateTotalXP()
-            db.collection("users").document(uid).set(
-                hashMapOf("xp" to totalXP),
-                SetOptions.merge()
-            )
+            val totalStars = calculateTotalStars() // New helper for backward compatibility
+            
+            // Only sync if we actually have progress to report
+            if (totalXP > 0) {
+                db.collection("users").document(uid).set(
+                    hashMapOf(
+                        "xp" to totalXP,
+                        "stars" to totalStars
+                    ),
+                    SetOptions.merge()
+                )
+            }
         }
+    }
+
+    private fun calculateTotalStars(): Int {
+        val dsList = listOf("Stack", "Queue", "Singly Linked List", "Doubly LL", "Circular LL", "Binary Search Tree", "AVL Tree", "Heap", "B-Tree", "B+ Tree")
+        var total = 0
+        dsList.forEach { ds ->
+            total += getAllLevelStars(ds).values.sum()
+        }
+        return total
     }
 
     fun saveProgress(dsName: String, level: Int, stars: Int) {

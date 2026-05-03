@@ -98,13 +98,15 @@ fun AuthenticationApp(otpHelper: OtpHelper, onAuthSuccess: () -> Unit) {
         } catch (e: ApiException) {
             // PROVIDE BETTER DEBUG INFO: 
             // 12500: Internal Error
-            // 10: Developer Error (Usually SHA-1 mismatch)
+            // 10: Developer Error (Usually SHA-1/SHA-256 mismatch or API not enabled)
             // 7: Network Error
+            // 12501: Sign-in Cancelled (or configuration issue)
             val message = when(e.statusCode) {
-                10 -> "Developer Error (check SHA-1 in Firebase)"
-                7 -> "Network Error"
-                12500 -> "Internal Error"
-                else -> "Error code: ${e.statusCode}"
+                10 -> "Developer Error (10): Check SHA fingerprints and Google Sign-In API in Firebase."
+                7 -> "Network Error (7): Check your internet connection."
+                12500 -> "Internal Error (12500): Try clearing Google Play Services data."
+                12501 -> "Sign-in Cancelled (12501): User cancelled or configuration mismatch."
+                else -> "Error code: ${e.statusCode} - ${e.localizedMessage}"
             }
             Toast.makeText(context, "Google Login Failed: $message", Toast.LENGTH_LONG).show()
         }
@@ -127,33 +129,49 @@ fun AuthenticationApp(otpHelper: OtpHelper, onAuthSuccess: () -> Unit) {
         "signup" -> SignUpScreen(
             onOtpRequested = { name, phone ->
                 // Check if username/phone exists
-                db.collection("users").whereEqualTo("username", name).get().addOnSuccessListener { q ->
-                    if (!queryExists(q)) {
-                        username = name
-                        phoneNumber = phone
-                        otpHelper.sendOtp(phone, { currentScreen = "otp" }, { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() })
-                    } else {
-                        Toast.makeText(context, "Username already exists. Please log in.", Toast.LENGTH_SHORT).show()
-                        currentScreen = "login"
+                db.collection("users").whereEqualTo("username", name).get()
+                    .addOnSuccessListener { q ->
+                        if (!queryExists(q)) {
+                            username = name
+                            phoneNumber = phone
+                            Toast.makeText(context, "Sending OTP...", Toast.LENGTH_SHORT).show()
+                            otpHelper.sendOtp(phone, 
+                                { currentScreen = "otp" }, 
+                                { error -> Toast.makeText(context, "OTP Error: $error", Toast.LENGTH_LONG).show() }
+                            )
+                        } else {
+                            Toast.makeText(context, "Username already exists. Please log in.", Toast.LENGTH_SHORT).show()
+                            currentScreen = "login"
+                        }
                     }
-                }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(context, "Database check failed: ${e.message}. Check internet or Firestore rules.", Toast.LENGTH_LONG).show()
+                    }
             },
             onGoogleSignInRequested = { startGoogleSignIn() },
             onLoginClick = { currentScreen = "login" }
         )
         "login" -> LoginScreen(
             onLoginRequested = { enteredUser ->
-                db.collection("users").whereEqualTo("username", enteredUser).get().addOnSuccessListener { query ->
-                    if (!query.isEmpty) {
-                        val doc = query.documents[0]
-                        username = enteredUser
-                        phoneNumber = doc.getString("phone") ?: ""
-                        otpHelper.sendOtp(phoneNumber, { currentScreen = "otp" }, { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() })
-                    } else {
-                        Toast.makeText(context, "Username not found. Please sign up.", Toast.LENGTH_SHORT).show()
-                        currentScreen = "signup"
+                db.collection("users").whereEqualTo("username", enteredUser).get()
+                    .addOnSuccessListener { query ->
+                        if (!query.isEmpty) {
+                            val doc = query.documents[0]
+                            username = enteredUser
+                            phoneNumber = doc.getString("phone") ?: ""
+                            Toast.makeText(context, "User found. Sending OTP...", Toast.LENGTH_SHORT).show()
+                            otpHelper.sendOtp(phoneNumber, 
+                                { currentScreen = "otp" }, 
+                                { error -> Toast.makeText(context, "OTP Error: $error", Toast.LENGTH_LONG).show() }
+                            )
+                        } else {
+                            Toast.makeText(context, "Username not found. Please sign up.", Toast.LENGTH_SHORT).show()
+                            currentScreen = "signup"
+                        }
                     }
-                }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(context, "Login search failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
             },
             onGoogleSignInRequested = { startGoogleSignIn() },
             onSignUpClick = { currentScreen = "signup" }

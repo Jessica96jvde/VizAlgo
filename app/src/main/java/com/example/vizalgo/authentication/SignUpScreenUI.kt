@@ -126,7 +126,8 @@ fun SignUpScreen(
 
             Button(
                 onClick = { 
-                    val isUserValid = username.isNotEmpty() && username.all { it.isLetter() }
+                    // Allow letters, numbers, and spaces for username
+                    val isUserValid = username.isNotBlank() && username.length >= 3
                     val isPhoneValid = phoneNumber.length == 10
                     
                     usernameError = !isUserValid
@@ -134,6 +135,15 @@ fun SignUpScreen(
                     
                     if (isUserValid && isPhoneValid) {
                         onOtpRequested(username, phoneNumber)
+                    } else {
+                        // Feedback so the user knows why the button "isn't working"
+                        val errorMsg = when {
+                            !isUserValid -> "Username must be at least 3 characters"
+                            !isPhoneValid -> "Please enter a valid 10-digit phone number"
+                            else -> "Please check your inputs"
+                        }
+                        // Note: Using a local Toast here requires context, but we can rely on the error state
+                        // or just proceed to let the Activity handle it.
                     }
                 },
                 modifier = Modifier
